@@ -24,6 +24,7 @@ function NotFound() {
             <Button variant="primary" size="md">
               <Compass className="w-4 h-4" /> Browse Gatherings
             </Button>
+            
           </Link>
         </div>
       </div>

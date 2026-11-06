@@ -53,7 +53,7 @@ export default function FeaturedCarousel({ events }) {
     
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
         Autoplay({
-            delay: 2000, 
+            delay: 4000, 
             stopOnInteraction: false, 
             stopOnMouseEnter: true,
             

@@ -8,6 +8,7 @@ import Footer from './components/common/Footer'
 import { Route, Routes, useLocation } from 'react-router'
 import NotFound from './pages/NotFound'
 import HomePage from './pages/HomePage'
+import EventDetailsPage from './pages/EventDetailsPage'
 
 // ! Problem : Due to Route as No Reload, if we switch to another page it stays in same position rather than going to Top
 // * Solution : It's give the solution to when new page loads it goes to Top
@@ -19,6 +20,8 @@ function ScrollToTop(){
   },[pathname])
 }
 
+// ! Problem : How to give dynamic varible Route in Link?
+// * Solution : Use /:id ; but rather than id we use slug ; b/c slug gives clarity about the page also..
 
 function App() {
 
@@ -30,6 +33,8 @@ function App() {
       <div className='flex-1'>
         <Routes>
           <Route path="/" element={<HomePage/>} />
+          <Route path="/events/:slug" element={<EventDetailsPage/>} />
+
           <Route path="*" element={<NotFound/>} />
         </Routes>
       </div>

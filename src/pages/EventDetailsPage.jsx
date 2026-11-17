@@ -3,6 +3,7 @@ import axios from 'axios';
 import { ArrowLeft, ArrowLeftSquare, Bookmark, Calendar, Check, Clock, MapPin, Share2, ShieldCheck, Sparkles, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
+import { toast } from 'sonner';
 
 const Modes = {
   "in-person": "In-Person Gathering",
@@ -12,6 +13,7 @@ const Modes = {
 
 // ! How to use Toast Notification?
 // * Solution : External Package = Sonner
+// Use Toast in APp Component and we can use it from anywhere
 
 export default function EventDetailsPage() {
     const { slug } = useParams();
@@ -43,6 +45,7 @@ export default function EventDetailsPage() {
         // How to add text copied to clipboard --> navigator.clipboard.writeText(...)
         // ! How to access Current Url Link? --> window.location.href
         navigator.clipboard.writeText(window.location.href)
+        toast.success("URL Copied")
         
     }
 

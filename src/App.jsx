@@ -9,6 +9,7 @@ import { Route, Routes, useLocation } from 'react-router'
 import NotFound from './pages/NotFound'
 import HomePage from './pages/HomePage'
 import EventDetailsPage from './pages/EventDetailsPage'
+import { Toaster } from 'sonner'
 
 // ! Problem : Due to Route as No Reload, if we switch to another page it stays in same position rather than going to Top
 // * Solution : It's give the solution to when new page loads it goes to Top
@@ -38,7 +39,15 @@ function App() {
           <Route path="*" element={<NotFound/>} />
         </Routes>
       </div>
-        <Footer/>
+      <Footer/>
+      <Toaster richColors toastOptions={{
+        style: {
+          borderRadius: '1rem',
+          border: '1px solid #EBE8DF',
+          fontFamily: '"Plus Jakarta Sans", sans-serif',
+          fontSize: '13px'
+        }
+      }}/>
     </div>
   )
 }

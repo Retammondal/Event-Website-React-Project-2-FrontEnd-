@@ -1,4 +1,5 @@
 import EventReviewSection from '@/components/events/EventReviewSection';
+import api from '@/lib/axios';
 import { formatEventDate, formatEventTimeRange, formatPrice, getDaysRemaining } from '@/lib/utils';
 import axios from 'axios';
 import { ArrowLeft, ArrowLeftSquare, Bookmark, Calendar, Check, Clock, MapPin, Share2, ShieldCheck, Sparkles, Users } from 'lucide-react';
@@ -29,12 +30,12 @@ export default function EventDetailsPage() {
             setIsLoading(true)
             // For the Home Page Carousal Loading
             try {
-                let { data: { data } } = await axios.get(`https://eventsphere-server-mfdb.onrender.com/api/events/${slug}`)
+                let data = await api.get(`/api/events/${slug}`)
                 console.log(data);
                 setEvent(data)
            
                 // For the Reviews 
-                let { data: {data : reviews} } = await axios.get(`https://eventsphere-server-mfdb.onrender.com/api/events/${data.id || data._id}/reviews`)
+                let reviews = await api.get(`/api/events/${data.id || data._id}/reviews`)
                 setReviews(reviews)
             }
             catch (error) {

@@ -51,3 +51,8 @@ export function getDaysRemaining(startDate){
 
     return formatDistanceToNow(eventDate, {addSuffix:true})
 }
+
+export function getDaysPassed(givenDate){
+    const passDate = parseISO(givenDate)
+    return formatDistanceToNow(passDate, {addSuffix: true})
+}

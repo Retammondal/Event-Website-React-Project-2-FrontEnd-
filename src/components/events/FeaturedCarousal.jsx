@@ -3,8 +3,8 @@ import Autoplay from 'embla-carousel-autoplay'
 import React, { useEffect, useState } from 'react'
 import { ArrowRight, Calendar, ChevronLeft, ChevronRight, MapPin, Sparkles } from 'lucide-react'
 import { Link } from 'react-router'
-import { Button } from './ui/button'
-import { Badge } from './ui/badge'
+import { Button } from '../ui/button'
+import { Badge } from '../ui/badge'
 import { formatEventDate, formatPrice } from '@/lib/utils'
 
 

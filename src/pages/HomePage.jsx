@@ -1,6 +1,6 @@
 import Skeleton from '@/components/common/skeleton'
 import EventCard from '@/components/events/EventCard'
-import FeaturedCarousal from '@/components/FeaturedCarousal'
+import FeaturedCarousal from '@/components/events/FeaturedCarousal'
 import { Button } from '@/components/ui/button'
 import axios from 'axios'
 import { Briefcase, ChevronRight, Compass, Cpu, Flame, GraduationCap, MapPin, MoveRightIcon, Music, Palette, Sparkles, Tag, Trophy } from 'lucide-react'

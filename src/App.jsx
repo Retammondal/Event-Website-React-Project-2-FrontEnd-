@@ -10,6 +10,8 @@ import NotFound from './pages/NotFound'
 import HomePage from './pages/HomePage'
 import EventDetailsPage from './pages/EventDetailsPage'
 import { Toaster } from 'sonner'
+import FavoritesPage from './pages/FavoritesPage'
+import ExplorePage from './pages/ExplorePage'
 
 // ! Problem : Due to Route as No Reload, if we switch to another page it stays in same position rather than going to Top
 // * Solution : It's give the solution to when new page loads it goes to Top
@@ -35,6 +37,8 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage/>} />
           <Route path="/events/:slug" element={<EventDetailsPage/>} />
+          <Route path="/favorites" element={<FavoritesPage/>} />
+          <Route path="/explore" element={<ExplorePage/>} />
 
           <Route path="*" element={<NotFound/>} />
         </Routes>

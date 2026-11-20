@@ -1,11 +1,14 @@
 import { Button } from '@/components/ui/button'
 import { Bookmark, Calendar, Compass, Menu, PlusCircle, Search, Sparkles, User, X } from 'lucide-react'
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router'
 
 function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   // console.log(isMobileMenuOpen);
+
+  const favorites = useSelector((state)=> state.favorites.items)
 
   return (
     <div className='sticky top-0 z-40 w-full bg-[#FAF9F5]/90 backdrop-blur-md border-b border-[#EBE8DF]'>
@@ -51,6 +54,11 @@ function Navbar() {
             >
               <Bookmark className="w-4 h-4" />
               <span>Saved</span>
+              {
+                favorites.length > 0 && (
+                  <span className='w-5 h-5 rounded-full bg-orange-100 text-[#E65100] text-[11px] font-bold flex items-center justify-center'>{favorites.length}</span>
+                )
+              }
             </Link>
 
             <Link

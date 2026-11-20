@@ -1,16 +1,18 @@
+import { handleFavorite } from '@/components/events/EventCard';
 import EventReviewSection from '@/components/events/EventReviewSection';
 import api from '@/lib/axios';
 import { formatEventDate, formatEventTimeRange, formatPrice, getDaysRemaining } from '@/lib/utils';
 import axios from 'axios';
 import { ArrowLeft, ArrowLeftSquare, Bookmark, Calendar, Check, Clock, MapPin, Share2, ShieldCheck, Sparkles, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router';
 import { toast } from 'sonner';
 
 const Modes = {
-  "in-person": "In-Person Gathering",
-  "online": "Online Conclave",
-  "hybrid": "Hybrid Format",
+    "in-person": "In-Person Gathering",
+    "online": "Online Conclave",
+    "hybrid": "Hybrid Format",
 };
 
 // ! How to use Toast Notification?
@@ -25,6 +27,11 @@ export default function EventDetailsPage() {
     const [event, setEvent] = useState({});                 // events is taking all the Fetch data of that Event
     const [reviews, setReviews] = useState([])
 
+    const dispatch = useDispatch();
+    const isFavorite = useSelector((state) => state.favorites.items.some(                // if got give True; otherwise give False
+        (e) => (e.id || e._id) === (event.id || event._id)
+    ))
+
     useEffect(() => {
         async function fetchEvent() {
             setIsLoading(true)
@@ -33,7 +40,7 @@ export default function EventDetailsPage() {
                 let data = await api.get(`/api/events/${slug}`)
                 console.log(data);
                 setEvent(data)
-           
+
                 // For the Reviews 
                 let reviews = await api.get(`/api/events/${data.id || data._id}/reviews`)
                 setReviews(reviews)
@@ -46,14 +53,13 @@ export default function EventDetailsPage() {
         fetchEvent();
     }, [])
 
-    function handleShare(){
+    function handleShare() {
         // ! How to handle Share Button?
         // ! How to access the Clipboard? --> navigator.clipboard
         // How to add text copied to clipboard --> navigator.clipboard.writeText(...)
         // ! How to access Current Url Link? --> window.location.href
         navigator.clipboard.writeText(window.location.href)
         toast.success("URL Copied")
-        
     }
 
     // Shimmer Effect
@@ -81,7 +87,7 @@ export default function EventDetailsPage() {
                     to="/explore"
                     className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-600 hover:text-stone-900 transition-colors"
                 >
-                    <ArrowLeft className='w-4 h-4'/>
+                    <ArrowLeft className='w-4 h-4' />
                     <span>Back to Explore</span>
                 </Link>
 
@@ -97,10 +103,16 @@ export default function EventDetailsPage() {
 
                     <button
                         type="button"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all cursor-pointer bg-white border-[#DDD9CE] hover:bg-stone-50 text-stone-700"
+                        onClick={(e) => handleFavorite(e, event, dispatch, isFavorite)}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all cursor-pointer ${isFavorite
+                                ? "bg-orange-50 border-orange-200 text-[#E65100]"
+                                : "bg-white border-[#DDD9CE] hover:bg-stone-50 text-stone-700"
+                            }`}
                     >
-                        <Bookmark className='w-4 h-4' />
-                        <span>Save</span>
+                        <Bookmark
+                            className={`w-3.5 h-3.5 ${isFavorite ? "fill-[#E65100]" : ""}`}
+                        />
+                        <span>{isFavorite ? "Saved" : "Save"}</span>
                     </button>
                 </div>
             </div>
@@ -135,7 +147,7 @@ export default function EventDetailsPage() {
                         {
                             event.featured &&
                             <span className="inline-flex items-center gap-1.5 whitespace-nowrap bg-[#FFF3E0] text-[#B73E00] border border-[#FFE0B2] text-xs px-2.5 py-1 rounded-full font-medium">
-                                <Sparkles className='w-4 h-4'/> Featured Pick
+                                <Sparkles className='w-4 h-4' /> Featured Pick
                             </span>
                         }
                     </div>
@@ -146,15 +158,15 @@ export default function EventDetailsPage() {
 
                     <div className="flex items-center gap-4 text-xs sm:text-sm text-stone-200 pt-1 flex-wrap font-medium">
                         <span className="flex items-center gap-1 text-orange-300 font-semibold">
-                            <Calendar className='w-4 h-4'/> {formatEventDate(event.startDate)}
+                            <Calendar className='w-4 h-4' /> {formatEventDate(event.startDate)}
                         </span>
                         <span>•</span>
                         <span className="flex items-center gap-1">
-                            <Clock className='w-4 h-4'/> {formatEventTimeRange(event?.startDate, event?.endDate)}
+                            <Clock className='w-4 h-4' /> {formatEventTimeRange(event?.startDate, event?.endDate)}
                         </span>
                         <span>•</span>
                         <span className="flex items-center gap-1">
-                            <MapPin className='w-4 h-4'/> {event?.venue}, {event?.city}
+                            <MapPin className='w-4 h-4' /> {event?.venue}, {event?.city}
                         </span>
                     </div>
                 </div>
@@ -236,7 +248,7 @@ export default function EventDetailsPage() {
                     </section>
 
                     {/* Reviews section */}
-                    <EventReviewSection reviews={reviews} averageRating={event.averageRating} numReviews={event.numReviews}/>
+                    <EventReviewSection reviews={reviews} averageRating={event.averageRating} numReviews={event.numReviews} />
                 </div>
 
                 {/* Right Column: Sticky Booking Ticket Card */}
@@ -263,7 +275,7 @@ export default function EventDetailsPage() {
                         <div className="space-y-2">
                             <div className="flex justify-between text-xs text-stone-600">
                                 <span className="flex items-center gap-1.5 font-medium">
-                                    <Users className='w-4 h-4'/> Capacity
+                                    <Users className='w-4 h-4' /> Capacity
                                 </span>
                                 <span className="font-bold text-stone-900">
                                     {event?.registeredCount} of {event?.capacity} seats filled
@@ -272,7 +284,7 @@ export default function EventDetailsPage() {
                             <div className="w-full h-2 bg-stone-100 rounded-full overflow-hidden">
                                 <div
                                     className="h-full bg-[#E65100] rounded-full transition-all"
-                                    style={{width : `${Math.round((event?.registeredCount*100/event?.capacity))}%`}}
+                                    style={{ width: `${Math.round((event?.registeredCount * 100 / event?.capacity))}%` }}
                                 />
                             </div>
                             <p className="text-[11px] text-stone-400 text-right">
@@ -300,11 +312,11 @@ export default function EventDetailsPage() {
                         {/* Trust points */}
                         <div className="pt-4 border-t border-[#F2EFE8] space-y-2 text-[11px] text-stone-500">
                             <div className="flex items-center gap-2">
-                                <span className="text-emerald-600"><ShieldCheck className='w-4 h-4'/></span>
+                                <span className="text-emerald-600"><ShieldCheck className='w-4 h-4' /></span>
                                 <span>Verified organizer & authentic attendee review policy</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <span className="text-stone-400"><Check className='w-4 h-4'/></span>
+                                <span className="text-stone-400"><Check className='w-4 h-4' /></span>
                                 <span>Digital ticket QR sent to your email instantly</span>
                             </div>
                         </div>

@@ -277,14 +277,14 @@ function HomePage() {
         { isLoading ? (
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
             {[...Array(8)].map((_,i)=>(
-              <Skeleton/>
+              <Skeleton key={i}/>
             ))}
           </div>
         ) :
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {
             trendingEvents.map((e) => (
-              <EventCard key={e._id} e = {e}/>
+              <EventCard key={e._id} event = {e}/>
             ))
           }
         </div>}

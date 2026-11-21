@@ -10,7 +10,7 @@ api.interceptors.request.use((request) => {
 }, (error) => { })
 
 api.interceptors.response.use((response)=>{
-    return response.data.data                               // Response Destructuring is happening here....
+    return response.data                                   // Response Destructuring is happening here....
 }, (error) => { })
 
 

@@ -8,67 +8,67 @@ import { Badge } from '../ui/badge'
 import { formatEventDate, formatPrice } from '@/lib/utils'
 
 
-    // ==================================================================================================
-    // 💡 Concept: The useEmblaCarousel Hook (emblaRef & emblaApi)
-    // ==================================================================================================
-    // emblaRef -> A React Ref that gives Embla access to the main wrapper Div where all slide Divs 
-    //             are placed side-by-side. (Requires 'overflow-hidden' on that div to work!).
-    // emblaApi -> An object containing methods (like scrollPrev, scrollNext). Because it is linked 
-    //             to emblaRef, the API knows exactly which DOM element it is controlling.
+// ==================================================================================================
+// 💡 Concept: The useEmblaCarousel Hook (emblaRef & emblaApi)
+// ==================================================================================================
+// emblaRef -> A React Ref that gives Embla access to the main wrapper Div where all slide Divs 
+//             are placed side-by-side. (Requires 'overflow-hidden' on that div to work!).
+// emblaApi -> An object containing methods (like scrollPrev, scrollNext). Because it is linked 
+//             to emblaRef, the API knows exactly which DOM element it is controlling.
 
-    // ==================================================================================================
-    // 💡 Concept: Adding Autoplay (Separate Plugin)
-    // ==================================================================================================
-    // To make it autoplay, install the package: npm install embla-carousel-autoplay
-    // Pass it inside the 2nd argument of useEmblaCarousel (The Plugins Array). Each plugin takes 
-    // its own specific property object, like { delay: 2000 }.
+// ==================================================================================================
+// 💡 Concept: Adding Autoplay (Separate Plugin)
+// ==================================================================================================
+// To make it autoplay, install the package: npm install embla-carousel-autoplay
+// Pass it inside the 2nd argument of useEmblaCarousel (The Plugins Array). Each plugin takes 
+// its own specific property object, like { delay: 2000 }.
 
-    // ==================================================================================================
-    // FEATURE            | stopOnInteraction                                   | stopOnMouseEnter
-    // ==================================================================================================
-    // Trigger Action     | Clicking navigation buttons, swiping on mobile, or  | Simply moving the mouse cursor over 
-    //                    | dragging on desktop.                                | the carousel area.
-    // --------------------------------------------------------------------------------------------------
-    // Default Value      | true (Autoplay turns off permanently).              | false (Autoplay keeps running).
-    // --------------------------------------------------------------------------------------------------
-    // Behavior when true | PERMANENTLY STOPS autoplay until you programmatically | TEMPORARILY PAUSES autoplay; it 
-    //                    | restart it via code.                                | resumes automatically on mouse leave.
-    // --------------------------------------------------------------------------------------------------
+// ==================================================================================================
+// FEATURE            | stopOnInteraction                                   | stopOnMouseEnter
+// ==================================================================================================
+// Trigger Action     | Clicking navigation buttons, swiping on mobile, or  | Simply moving the mouse cursor over 
+//                    | dragging on desktop.                                | the carousel area.
+// --------------------------------------------------------------------------------------------------
+// Default Value      | true (Autoplay turns off permanently).              | false (Autoplay keeps running).
+// --------------------------------------------------------------------------------------------------
+// Behavior when true | PERMANENTLY STOPS autoplay until you programmatically | TEMPORARILY PAUSES autoplay; it 
+//                    | restart it via code.                                | resumes automatically on mouse leave.
+// --------------------------------------------------------------------------------------------------
 
 
-    // ===========================================================================================
-    // 💡 Concept: Explicit Plugin Method Calls on Buttons
-    // ===========================================================================================
-    // The emblaRef handles interactions INSIDE the slider (swiping/hovering the images).
-    // However, our custom buttons live OUTSIDE the emblaRef viewport. Therefore, hovering or 
-    // clicking them won't automatically trigger the plugin's built-in behaviors.
-    // Solution: We must explicitly tell the Autoplay plugin to stop() or reset() using emblaApi!
+// ===========================================================================================
+// 💡 Concept: Explicit Plugin Method Calls on Buttons
+// ===========================================================================================
+// The emblaRef handles interactions INSIDE the slider (swiping/hovering the images).
+// However, our custom buttons live OUTSIDE the emblaRef viewport. Therefore, hovering or 
+// clicking them won't automatically trigger the plugin's built-in behaviors.
+// Solution: We must explicitly tell the Autoplay plugin to stop() or reset() using emblaApi!
 
-    // But here by rootNode we already passed whole component to be work as emblaRef ViewPort so need to give extra
+// But here by rootNode we already passed whole component to be work as emblaRef ViewPort so need to give extra
 
 
 
 export default function FeaturedCarousel({ events }) {
     const [selectedIndex, setSelectedIndex] = useState(0)           // Giving for buttom down
-    
+
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
         Autoplay({
-            delay: 4000, 
-            stopOnInteraction: false, 
+            delay: 4000,
+            stopOnInteraction: false,
             stopOnMouseEnter: true,
-            
+
             // rootNode: 'emblaRoot' is the div containing emblaRef. By setting it to parentElement, 
             // we ensure that hovering over the ENTIRE component (including arrows) triggers the 
             // stopOnMouseEnter behavior, not just hovering over the slides themselves!
-            rootNode: (emblaRoot) => emblaRoot.parentElement 
+            rootNode: (emblaRoot) => emblaRoot.parentElement
         })
     ])
 
     // Setting Index on each loop changes
-    useEffect(()=>{
+    useEffect(() => {
         if (!emblaApi) return;
-        emblaApi.on("select", ()=> setSelectedIndex(emblaApi.selectedScrollSnap()))           // It's an Event Listener
-    },[emblaApi])
+        emblaApi.on("select", () => setSelectedIndex(emblaApi.selectedScrollSnap()))           // It's an Event Listener
+    }, [emblaApi])
 
 
     const goToPrev = () => {
@@ -80,14 +80,14 @@ export default function FeaturedCarousel({ events }) {
         emblaApi.plugins().autoplay.reset();
     }
 
-    const scrollTo = (i) =>{
+    const scrollTo = (i) => {
         // console.log(i);      // will give the index
         emblaApi.scrollTo(i)    // will take it to the index
     }
     return (
         <div className="relative group">
             {/* 💡 This ref={emblaRef} is running the show. It tells Embla "This is the viewport!" */}
-            <div className="overflow-hidden rounded-3xl" ref={emblaRef}> 
+            <div className="overflow-hidden rounded-3xl" ref={emblaRef}>
                 <div className="flex">
                     {events.map((event) => {
                         const eventID = event._id || event.id;
@@ -214,17 +214,16 @@ export default function FeaturedCarousel({ events }) {
                 {/* Only the same no. of button == no. of events */}
                 {/* Logic : if index == current index of event button will be little spreaded */}
                 {
-                    events.map((_,index)=> {
-                        return(
-                            <button 
-                                key={index} 
-                                onClick={()=>scrollTo(index)}
-                                className={`transition-all rounded-full ${
-                                    index === selectedIndex 
+                    events.map((_, index) => {
+                        return (
+                            <button
+                                key={index}
+                                onClick={() => scrollTo(index)}
+                                className={`transition-all rounded-full ${index === selectedIndex
                                         ? "w-6 h-2 bg-[#E65100]"
                                         : "w-2 h-2 bg-white/50 hover:bg-white/80"
                                     }`} />)
-                })
+                    })
                 }
             </div>
         </div>

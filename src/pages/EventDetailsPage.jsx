@@ -37,12 +37,12 @@ export default function EventDetailsPage() {
             setIsLoading(true)
             // For the Home Page Carousal Loading
             try {
-                let data = await api.get(`/api/events/${slug}`)
+                let {data} = await api.get(`/api/events/${slug}`)
                 console.log(data);
                 setEvent(data)
 
                 // For the Reviews 
-                let reviews = await api.get(`/api/events/${data.id || data._id}/reviews`)
+                let {data : reviews} = await api.get(`/api/events/${data.id || data._id}/reviews`)
                 setReviews(reviews)
             }
             catch (error) {

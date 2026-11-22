@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import EventFilterBar from '@/components/events/EventFilterBar';
 import { useDispatch, useSelector } from 'react-redux';
-import { setFormat } from '@/store/slices/filterSlice';
+import { setEntry, setFormat } from '@/store/slices/filterSlice';
 
 export default function ExplorePage() {
 
@@ -40,6 +40,10 @@ export default function ExplorePage() {
         if (filters.format){
             params.set("format", filters.format);
         }
+
+        if (filters.isPaid !== ""){
+            params.set("isPaid", String(filters.isPaid))
+        }
         params.set('page', page);
         console.log(params.toString());                     // format=hybrid&page=1
         try {
@@ -68,17 +72,24 @@ export default function ExplorePage() {
 
     useEffect(()=>{
         const urlFormat = searchParams.get("format");
+        const urlIsPaid = searchParams.get("isPaid")
 
         if (urlFormat){
             dispatch(setFormat(urlFormat))
         } else{
             dispatch(setFormat(""))
         }
+
+        if (urlIsPaid){
+            dispatch(setEntry(urlIsPaid === "true" ? true : false))
+        } else{
+            dispatch(setEntry(""))
+        }
     }, [searchParams])
 
     useEffect(() => {
         fetchEvents();
-    }, [filters.format])
+    }, [filters.format, filters.isPaid])
 
     useEffect(() => {
         if (inView && pagination.hasMore && !isLoading && !isLoadingMore) {

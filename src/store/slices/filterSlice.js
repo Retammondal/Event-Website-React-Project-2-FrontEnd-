@@ -11,8 +11,11 @@ const filterSlice = createSlice({
     reducers : {
         setFormat (state, action){
             state.format = action.payload
+        },
+        setEntry(state, action){
+            state.isPaid = action.payload 
         }
     }
 })
 export default filterSlice.reducer
-export const { setFormat } = filterSlice.actions
+export const { setFormat,setEntry } = filterSlice.actions

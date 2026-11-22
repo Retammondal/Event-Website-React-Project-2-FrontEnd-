@@ -1,4 +1,5 @@
-import { setFormat } from "@/store/slices/filterSlice";
+import { setFormat, setEntry } from "@/store/slices/filterSlice";
+import { format } from "date-fns";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useSearchParams } from "react-router";
@@ -12,20 +13,31 @@ import { useParams, useSearchParams } from "react-router";
 export default function EventFilterBar() {
     const dispatch = useDispatch()
     const filters = useSelector((state) => state.filters)
-    
+
     const [searchParams, setSearchParams] = useSearchParams();
     const activeFormat = searchParams.get("format") || filters.format
+    const activeEntry = searchParams.get('isPaid') || String(filters.isPaid)
+    // console.log(activeEntry);
+
+    function updateParams(updates) {
+        const params = new URLSearchParams(searchParams);
+        Object.entries(updates).forEach(([key, value]) => {
+            if (value !== undefined && value !== "" && value !== null) {
+                params.set(key, String(value))                 // why string; as we are passing boolean...
+            } else {
+                params.delete(key)
+            }
+        })
+        setSearchParams(params)
+    }
 
     function handleFormatChange(format) {
         dispatch(setFormat(format))
-        const params = new URLSearchParams();
-        if (format) {
-            params.set('format', format)
-        } else {
-            params.delete('format')
-        }
-        setSearchParams(params)
-
+        updateParams({ format: format })
+    }
+    function handleEntry(entry) {
+        dispatch(setEntry(entry));
+        updateParams({ isPaid: entry })
     }
 
     return (
@@ -219,8 +231,8 @@ export default function EventFilterBar() {
                             type="button"
                             onClick={() => handleFormatChange(f)}
                             className={`px-2.5 py-1 rounded-lg border text-xs font-medium capitalize transition-all cursor-pointer ${activeFormat === f
-                                    ? "bg-stone-800 text-white border-stone-800"
-                                    : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+                                ? "bg-stone-800 text-white border-stone-800"
+                                : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
                                 }`}
                         >
                             {f === "" ? "All Formats" : f}
@@ -229,22 +241,33 @@ export default function EventFilterBar() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <span className="font-semibold text-stone-700">Admission:</span>
+                    <span className="font-semibold text-stone-700">Entry:</span>
                     <button
                         type="button"
-                        className="px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer bg-stone-800 text-white border-stone-800"
+                        onClick={() => handleEntry("")}
+                        className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer ${activeEntry === "" || null
+                                ? "bg-stone-800 text-white border-stone-800"
+                                : "bg-white border-[#DDD9CE] text-stone-600"
+                            }`}
                     >
                         All
                     </button>
                     <button
                         type="button"
-                        className="px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
-                    >
+                        onClick={() => handleEntry(false)}          // isPaid = false (Why? Backend needs like that data)
+                        className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer ${activeEntry === "false"
+                                ? "bg-emerald-700 text-white border-emerald-700"
+                                : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+                            }`}                    >
                         Free
                     </button>
                     <button
                         type="button"
-                        className="px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+                        onClick={() => handleEntry(true)}           // isPaid = true
+                        className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer ${activeEntry === "true"
+                                ? "bg-stone-800 text-white border-stone-800"
+                                : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+                            }`}
                     >
                         Paid
                     </button>

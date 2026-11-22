@@ -3,10 +3,11 @@ import EventCard from '@/components/events/EventCard';
 import api from '@/lib/axios';
 import { useInView } from 'react-intersection-observer';
 
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useSearchParams } from 'react-router';
 import EventFilterBar from '@/components/events/EventFilterBar';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setFormat } from '@/store/slices/filterSlice';
 
 export default function ExplorePage() {
 
@@ -16,6 +17,10 @@ export default function ExplorePage() {
     const [pagination, setPagination] = useState({ page: 1, total: 0, hasMore: false })
 
     const filters = useSelector((state)=> state.filters)
+    const [searchParams, setSearchParams] = useSearchParams();
+    const dispatch = useDispatch();
+    const activeRequestId = useRef(0);
+    // ? Why dont we take useState, it updates quick where useState updates state after function run complete
 
     // Use object destructuring, so you don't need to remember the exact order
     const { ref: observerRef, inView } = useInView({
@@ -25,16 +30,29 @@ export default function ExplorePage() {
 
 
     async function fetchEvents(page = 1, append = false) {
+        const thisRequestId = ++activeRequestId.current;
         if (page === 1) {
             setIsLoading(true)
         } else {
             setIsLoadingMore(true)
         }
+        const params = new URLSearchParams();
+        if (filters.format){
+            params.set("format", filters.format);
+        }
+        params.set('page', page);
+        console.log(params.toString());                     // format=hybrid&page=1
         try {
             const { data: events, pagination } = await api.get(
-                `/api/events?page=${page}&format=${filters.format}`
+                // `/api/events?page=${page}&format=${filters.format}`
+                `/api/events?${params.toString()}`
             )
 
+            if (thisRequestId !== activeRequestId.current){
+                return;
+            }
+            // ? Why this step...when the first useEffect runs thisRequest = current = 1 ... run this function
+            // ? next useEffect activerequest is 1 and this becomes 2...cancels this function
             if (append) {
                 setEvents((prev) => [...prev, ...events])            // append means jo pahle se he rahne do..new wale niche add karon
             } else {
@@ -47,6 +65,16 @@ export default function ExplorePage() {
         setIsLoading(false)
         setIsLoadingMore(false)
     }
+
+    useEffect(()=>{
+        const urlFormat = searchParams.get("format");
+
+        if (urlFormat){
+            dispatch(setFormat(urlFormat))
+        } else{
+            dispatch(setFormat(""))
+        }
+    }, [searchParams])
 
     useEffect(() => {
         fetchEvents();

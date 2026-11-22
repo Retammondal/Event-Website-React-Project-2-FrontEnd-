@@ -1,8 +1,33 @@
 import { setFormat } from "@/store/slices/filterSlice";
-import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams, useSearchParams } from "react-router";
+
+// ! Currently if i select in-person -- it calls the api and show --> but we need to make it url (website.com/explore&format=in-person)
+// ? How to do that? --> update the url using URLSearchParams and useSearchParams
+
+// ! Problem : We implemented the url things...but when we search with new params...api fetch and button will not work
+// Solution : Button use in ActiveFormat which will get infor from search
 
 export default function EventFilterBar() {
     const dispatch = useDispatch()
+    const filters = useSelector((state) => state.filters)
+    
+    const [searchParams, setSearchParams] = useSearchParams();
+    const activeFormat = searchParams.get("format") || filters.format
+
+    function handleFormatChange(format) {
+        dispatch(setFormat(format))
+        const params = new URLSearchParams();
+        if (format) {
+            params.set('format', format)
+        } else {
+            params.delete('format')
+        }
+        setSearchParams(params)
+
+    }
+
     return (
         <div className="space-y-4">
             {/* Top Search & Primary Filters Row */}
@@ -192,8 +217,11 @@ export default function EventFilterBar() {
                         <button
                             key={i}
                             type="button"
-                            onClick={() => dispatch(setFormat(f))}
-                            className="px-2.5 py-1 rounded-lg border text-xs font-medium capitalize transition-all cursor-pointer bg-stone-800 text-white border-stone-800"
+                            onClick={() => handleFormatChange(f)}
+                            className={`px-2.5 py-1 rounded-lg border text-xs font-medium capitalize transition-all cursor-pointer ${activeFormat === f
+                                    ? "bg-stone-800 text-white border-stone-800"
+                                    : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+                                }`}
                         >
                             {f === "" ? "All Formats" : f}
                         </button>
